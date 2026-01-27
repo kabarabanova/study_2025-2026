@@ -1,0 +1,236 @@
+<section>
+<section id="информация" class="title-slide slide level1">
+<h1>Информация</h1>
+
+</section>
+<section id="докладчик" class="slide level2">
+<h2>Докладчик</h2>
+<div class="columns" data-align="center">
+<div class="column" style="width:70%;">
+<p>Барабанова Кристина, студент группы НФИбд-02-22</p>
+</div>
+</div>
+</section>
+<section id="цель-работы" class="slide level2">
+<h2>Цель работы</h2>
+<p>Основной целью работы является развёртывание в системе виртуализации
+(например, в VirtualBox) mininet, знакомство с основными командами для
+работы с Mininet через командную строку и через графический
+интерфейс.</p>
+</section></section>
+<section>
+<section id="выполнение-лабораторной-работы"
+class="title-slide slide level1">
+<h1>Выполнение лабораторной работы</h1>
+
+</section>
+<section id="подключение-к-виртуальной-машине" class="slide level2">
+<h2>Подключение к виртуальной машине</h2>
+<p>Залогинилась в виртуальной машине Посмотрела адрес машины:</p>
+<figure id="fig:001">
+<img data-src="images/1.png" style="width:70.0%" alt="рис. 1" />
+<figcaption aria-hidden="true">рис. 1</figcaption>
+</figure>
+<p>Подключилась к виртуальной машине (из терминала хостовой машины)</p>
+<figure id="fig:002">
+<img data-src="images/2.png" style="width:70.0%" alt="рис. 2" />
+<figcaption aria-hidden="true">рис. 2</figcaption>
+</figure>
+<p>Отключила ssh-соединение с виртуальной машиной</p>
+<figure id="fig:003">
+<img data-src="images/3.png" style="width:70.0%" alt="рис. 3" />
+<figcaption aria-hidden="true">рис. 3</figcaption>
+</figure>
+<p>Настроила ssh-подсоединение по ключу к виртуальной машине</p>
+<figure id="fig:004">
+<img data-src="images/4.png" style="width:70.0%" alt="рис. 4" />
+<figcaption aria-hidden="true">рис. 4</figcaption>
+</figure>
+<p>Вновь подключилась к виртуальной машине и убедилась, что
+подсоединение происходит успешно и без ввода пароля.</p>
+<figure id="fig:005">
+<img data-src="images/5.png" style="width:70.0%" alt="рис. 5" />
+<figcaption aria-hidden="true">рис. 5</figcaption>
+</figure>
+</section>
+<section id="настройка-доступа-к-интернет" class="slide level2">
+<h2>Настройка доступа к Интернет</h2>
+<p>Активировала второй интерфейс</p>
+<figure id="fig:006">
+<img data-src="images/6.png" style="width:70.0%" alt="рис. 6" />
+<figcaption aria-hidden="true">рис. 6</figcaption>
+</figure>
+<p>Для удобства дальнейшей работы установила mc</p>
+<figure id="fig:007">
+<img data-src="images/7.png" style="width:70.0%" alt="рис. 7" />
+<figcaption aria-hidden="true">рис. 7</figcaption>
+</figure>
+<p>Для удобства дальнейшей работы добавьте для mininet указание на
+использование двух адаптеров при запуске.</p>
+<figure id="fig:008">
+<img data-src="images/8.png" style="width:70.0%" alt="рис. 8" />
+<figcaption aria-hidden="true">рис. 8</figcaption>
+</figure>
+</section>
+<section id="обновление-версии-mininet" class="slide level2">
+<h2>Обновление версии Mininet</h2>
+<p>Скачала новую версию Mininet</p>
+<figure id="fig:009">
+<img data-src="images/9.png" style="width:70.0%" alt="рис. 9" />
+<figcaption aria-hidden="true">рис. 9</figcaption>
+</figure>
+<p>Обновила исполняемые файлы и проверила номер установленной версии
+mininet</p>
+<figure id="fig:010">
+<img data-src="images/10.png" style="width:70.0%" alt="рис. 10" />
+<figcaption aria-hidden="true">рис. 10</figcaption>
+</figure>
+</section>
+<section id="настройка-параметров-xterm" class="slide level2">
+<h2>Настройка параметров XTerm</h2>
+<p>По умолчанию XTerm использует растровые шрифты малого кегля. Для
+увеличения размера шрифта и применения векторных шрифтов вместо
+растровых необходимо внести изменения в файл
+/etc/X11/app-defaults/XTerm. Для этого можно воспользоваться следующей
+командой: 1 sudo mcedit /etc/X11/app-defaults/XTerm и затем в конце
+файла добавить строки</p>
+<figure id="fig:011">
+<img data-src="images/11.png" style="width:70.0%" alt="рис. 11" />
+<figcaption aria-hidden="true">рис. 11</figcaption>
+</figure>
+<p>Здесь выбран системный моноширинный шрифт, кегль шрифта — 12
+пунктов.</p>
+</section>
+<section id="настройка-соединения-x11-для-суперпользователя"
+class="slide level2">
+<h2>Настройка соединения X11 для суперпользователя</h2>
+<p>При попытке запуска приложения из-под суперпользователя возникает
+ошибка: X11 connection rejected because of wrong authentication. Ошибка
+возникает из-за того, что X-соединение выполняется от имени пользователя
+mininet, а приложение запускается от имени пользователя root с
+использованием sudo. Для исправления этой ситуации необходимо заполнить
+файл полномочий /root/.Xauthority, используя утилиту xauth. Скопировала
+значение куки (MIT magic cookie)1 пользователя mininet в файл для
+пользователя root:</p>
+<figure id="fig:012">
+<img data-src="images/12.png" style="width:70.0%" alt="рис. 12" />
+<figcaption aria-hidden="true">рис. 12</figcaption>
+</figure>
+</section>
+<section id="работа-с-mininet-из-под-windows" class="slide level2">
+<h2>Работа с Mininet из-под Windows</h2>
+<p>Установка программного обеспечения.</p>
+<p>Установила putty:</p>
+<figure id="fig:013">
+<img data-src="images/13.png" style="width:70.0%" alt="рис. 13" />
+<figcaption aria-hidden="true">рис. 13</figcaption>
+</figure>
+<p>Установила VcXsrv Windows X Server</p>
+<figure id="fig:014">
+<img data-src="images/14.png" style="width:70.0%" alt="рис. 14" />
+<figcaption aria-hidden="true">рис. 14</figcaption>
+</figure>
+</section>
+<section id="основы-работы-в-mininet" class="slide level2">
+<h2>2. Основы работы в Mininet</h2>
+</section>
+<section id="работа-с-mininet-с-помощью-командной-строки"
+class="slide level2">
+<h2>Работа с Mininet с помощью командной строки</h2>
+<p>Запустила Mininet с минимальной топологией, состоящей из коммутатора,
+подключённого к двум хостам</p>
+<figure id="fig:015">
+<img data-src="images/15.png" style="width:70.0%" alt="рис. 15" />
+<figcaption aria-hidden="true">рис. 15</figcaption>
+</figure>
+<p>Для отображения списка команд интерфейса командной строки Mininet и
+примеров их использования ввела команду в интерфейсе командной строки
+Mininet</p>
+<figure id="fig:016">
+<img data-src="images/16.png" style="width:70.0%" alt="рис. 16" />
+<figcaption aria-hidden="true">рис. 16</figcaption>
+</figure>
+<p>Для отображения доступных узлов ввела:</p>
+<figure id="fig:017">
+<img data-src="images/17.png" style="width:70.0%" alt="рис. 17" />
+<figcaption aria-hidden="true">рис. 17</figcaption>
+</figure>
+<p>Ввела команду net в интерфейсе командной строки Mininet, чтобы
+просмотреть доступные линки:</p>
+<figure id="fig:018">
+<img data-src="images/18.png" style="width:70.0%" alt="рис. 18" />
+<figcaption aria-hidden="true">рис. 18</figcaption>
+</figure>
+<p>Вывод этой команды показывает: – Хост h1 подключён через свой сетевой
+интерфейс h1-eth0 к коммутатору на интерфейсе s1-eth1. – Хост h2
+подключён через свой сетевой интерфейс h2-eth0 к коммутатору на
+интерфейсе s1-eth2. – Коммутатор s1: – имеет петлевой интерфейс lo. –
+подключается к h1-eth0 через интерфейс s1-eth1. – подключается к h2-eth0
+через интерфейс s1-eth2.</p>
+<p>Посмотрела конфигурацию всех узлов</p>
+<figure id="fig:019">
+<img data-src="images/19.png" style="width:70.0%" alt="рис. 19" />
+<figcaption aria-hidden="true">рис. 19</figcaption>
+</figure>
+<p>проверила соединение между хостами h1 и h2</p>
+<figure id="fig:020">
+<img data-src="images/20.png" style="width:70.0%" alt="рис. 20" />
+<figcaption aria-hidden="true">рис. 20</figcaption>
+</figure>
+</section>
+<section
+id="построение-и-эмуляция-сети-в-mininet-с-использованием-графического-интерфейса"
+class="slide level2">
+<h2>3. Построение и эмуляция сети в Mininet с использованием
+графического интерфейса</h2>
+<p>В терминале виртуальной машины mininet запустила MiniEdit:</p>
+<figure id="fig:021">
+<img data-src="images/21.png" style="width:70.0%" alt="рис. 21" />
+<figcaption aria-hidden="true">рис. 21</figcaption>
+</figure>
+<p>Добавила два хоста и один коммутатор, соединила хосты с
+коммутатором</p>
+<p>Настроила IP-адреса на хостах h1 и h2. Для хоста h1 указала IP-адрес
+10.0.0.1/8, а для хоста h2 — 10.0.0.2/8.</p>
+<p><img data-src="images/22.png" id="fig:022" style="width:70.0%"
+alt="рис. 22" /> <img data-src="images/23.png" id="fig:023"
+style="width:70.0%" alt="рис. 23" /></p>
+<p>Перед проверкой соединения между хостом h1 и хостом h2 необходимо
+запустить эмуляцию. Для запуска эмуляции нажала кнопку Run. После начала
+эмуляции кнопки панели MiniEdit стали серыми, указывая на то, что в
+настоящее время они отключены.</p>
+<p><img data-src="images/24.png" id="fig:024" style="width:70.0%"
+alt="рис. 24" /> <img data-src="images/25.png" id="fig:025"
+style="width:70.0%" alt="рис. 25" /></p>
+<p>Проверила соединение между хостами, введя в терминале хоста h1
+команду ping 10.0.0.2.</p>
+<figure id="fig:026">
+<img data-src="images/26.png" style="width:70.0%" alt="рис. 26" />
+<figcaption aria-hidden="true">рис. 26</figcaption>
+</figure>
+<p>Ранее IP-адреса узлам h1 и h2 были назначены вручную. В качестве
+альтернативы можно полагаться на Mininet для автоматического назначения
+IP-адресов.</p>
+<p>– Проверила IP-адреса хостов h1 и h2.</p>
+<p><img data-src="images/27.png" id="fig:027" style="width:70.0%"
+alt="рис. 27" /> <img data-src="images/28.png" id="fig:028"
+style="width:70.0%" alt="рис. 28" /></p>
+<p>В домашнем каталоге виртуальной машины mininet создала каталог для
+работы с проектами mininet:</p>
+<figure id="fig:029">
+<img data-src="images/29.png" style="width:70.0%" alt="рис. 29" />
+<figcaption aria-hidden="true">рис. 29</figcaption>
+</figure>
+<p>После сохранения проекта поменяла права доступа к файлам в каталоге
+проекта:</p>
+<figure id="fig:030">
+<img data-src="images/30.png" style="width:70.0%" alt="рис. 30" />
+<figcaption aria-hidden="true">рис. 30</figcaption>
+</figure>
+</section>
+<section id="выводы" class="slide level2">
+<h2>Выводы</h2>
+<p>Я осуществила развёртывание в системе виртуализации mininet,
+познакомилась с основными командами для работы с Mininet через командную
+строку и через графический интерфейс.</p>
+</section></section>
