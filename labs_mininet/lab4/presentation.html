@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ru-RU">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Барабанова Кристина">
+  <title>Лабораторная работа №4</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/black.css" id="theme">
+  
+  
+  
+  
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Лабораторная работа №4</h1>
+  <p class="subtitle">Эмуляция и измерение задержек в глобальных
+сетях</p>
+  <p class="author">Барабанова Кристина</p>
+  <p class="institute">Российский университет дружбы народов, Москва,
+Россия</p>
+</section>
+
+<section id="информация" class="slide level1">
+<h1>Информация</h1>
+<h2 id="докладчик">Докладчик</h2>
+<div class="columns" data-align="center">
+<div class="column" style="width:70%;">
+<p>Барабанова Кристина, студент группы НФИбд-02-22</p>
+</div>
+</div>
+<h2 id="цель-работы">Цель работы</h2>
+<p>Основной целью работы является знакомство с NETEM — инструментом для
+тестирования производительности приложений в виртуальной сети, а также
+получение навыков проведения интерактивного и воспроизводимого
+экспериментов по измерению задержки и её дрожания (jitter) в
+моделируемой сети в среде Mininet.</p>
+<h2 id="задание">Задание</h2>
+<ol type="1">
+<li>Задайте простейшую топологию, состоящую из двух хостов и коммутатора
+с назначенной по умолчанию mininet сетью 10.0.0.0/8.</li>
+<li>Проведите интерактивные эксперименты по добавлению/изменению
+задержки, джиттера, значения корреляции для джиттера и задержки,
+распределения времени задержки в эмулируемой глобальной сети.</li>
+<li>Реализуйте воспроизводимый эксперимент по заданию значения задержки
+в эмулируемой глобальной сети. Постройте график.</li>
+<li>Самостоятельно реализуйте воспроизводимые эксперименты по изменению
+задержки, джиттера, значения корреляции для джиттера и задержки,
+распределения времени задержки в эмулируемой глобальной сети. Постройте
+графики.</li>
+</ol>
+</section>
+<section id="выполнение-лабораторной-работы" class="slide level1">
+<h1>Выполнение лабораторной работы</h1>
+</section>
+<section id="запуск-лабораторной-топологии" class="slide level1">
+<h1>1. Запуск лабораторной топологии</h1>
+<p>Запустите виртуальную среду с mininet. Из основной ОС подключитесь к
+виртуальной машине:</p>
+<figure id="fig:001">
+<img data-src="images/1.png" style="width:60.0%" alt="рис. 1" />
+<figcaption aria-hidden="true">рис. 1</figcaption>
+</figure>
+<h2 id="section"></h2>
+<p>В виртуальной машине mininet при необходимости исправьте права
+запуска X-соединения. Скопируйте значение куки (MIT magic cookie)1
+своего пользователя mininet в файл для пользователя root:</p>
+<figure id="fig:002">
+<img data-src="images/2.png" style="width:60.0%" alt="рис. 2" />
+<figcaption aria-hidden="true">рис. 2</figcaption>
+</figure>
+<h2 id="section-1"></h2>
+<p>Задайте простейшую топологию, состоящую из двух хостов и коммутатора
+с назначенной по умолчанию mininet сетью 10.0.0.0/8:</p>
+<p>После введения этой команды запустятся терминалы двух хостов,
+коммутатора и контроллера.</p>
+<figure id="fig:003">
+<img data-src="images/3.png" style="width:60.0%" alt="рис. 3" />
+<figcaption aria-hidden="true">рис. 3</figcaption>
+</figure>
+<h2 id="section-2"></h2>
+<p>На хостах h1 и h2 введите команду ifconfig, чтобы отобразить
+информацию, относящуюся к их сетевым интерфейсам и назначенным им
+IP-адресам</p>
+<figure id="fig:004">
+<img data-src="images/4.png" style="width:60.0%" alt="рис. 4" />
+<figcaption aria-hidden="true">рис. 4</figcaption>
+</figure>
+<h2 id="section-3"></h2>
+<p>Проверьте подключение между хостами h1 и h2 с помощью команды ping с
+параметром -c 6</p>
+<figure id="fig:005">
+<img data-src="images/5.png" style="width:60.0%" alt="рис. 5" />
+<figcaption aria-hidden="true">рис. 5</figcaption>
+</figure>
+<p>RTT: 0.060/0.398/1.821/0.642 ms</p>
+</section>
+<section id="интерактивные-эксперименты" class="slide level1">
+<h1>2. Интерактивные эксперименты</h1>
+<h2
+id="добавлениеизменение-задержки-в-эмулируемой-глобальной-сети">Добавление/изменение
+задержки в эмулируемой глобальной сети</h2>
+<p>Сетевые эмуляторы задают задержки на интерфейсе. Например, задержка,
+вносимая в интерфейс коммутатора A, который подключён к интерфейсу
+коммутатора B, может представлять собой задержку распространения WAN,
+соединяющей оба коммутатора.</p>
+<ol type="1">
+<li>На хосте h1 добавьте задержку в 100 мс к выходному интерфейсу:</li>
+</ol>
+<figure id="fig:006">
+<img data-src="images/6.png" style="width:60.0%" alt="рис. 6" />
+<figcaption aria-hidden="true">рис. 6</figcaption>
+</figure>
+<h2 id="section-4"></h2>
+<ol start="2" type="1">
+<li>Проверьте, что соединение от хоста h1 к хосту h2 имеет задержку 100
+мс, используя команду ping с параметром -c 6 с хоста h1. Укажите в
+отчёте минимальное, среднее, максимальное и стандартное отклонение
+времени приёма-передачи (RTT).</li>
+</ol>
+<figure id="fig:007">
+<img data-src="images/7.png" style="width:60.0%" alt="рис. 7" />
+<figcaption aria-hidden="true">рис. 7</figcaption>
+</figure>
+<p>RTT: 100.209/100.596/101.399/0.448</p>
+<h2 id="section-5"></h2>
+<ol start="3" type="1">
+<li>Для эмуляции глобальной сети с двунаправленной задержкой необходимо
+к соответствующему интерфейсу на хосте h2 также добавить задержку в 100
+миллисекунд:</li>
+</ol>
+<figure id="fig:008">
+<img data-src="images/8.png" style="width:60.0%" alt="рис. 8" />
+<figcaption aria-hidden="true">рис. 8</figcaption>
+</figure>
+<h2 id="section-6"></h2>
+<ol start="4" type="1">
+<li>Проверьте, что соединение между хостом h1 и хостом h2 имеет RTT в
+200 мс (100 мс от хоста h1 к хосту h2 и 100 мс от хоста h2 к хосту h1),
+повторив команду ping с параметром -c 6 на терминале хоста h1. Укажите в
+отчёте минимальное, среднее, максимальное и стандартное отклонение
+времени приёма-передачи (RTT).</li>
+</ol>
+<figure id="fig:009">
+<img data-src="images/9.png" style="width:60.0%" alt="рис. 9" />
+<figcaption aria-hidden="true">рис. 9</figcaption>
+</figure>
+<p>RTT: 200.362/200.962/201.873/0.481</p>
+<h2 id="изменение-задержки-в-эмулируемой-глобальной-сети">Изменение
+задержки в эмулируемой глобальной сети</h2>
+<ol type="1">
+<li>Измените задержку со 100 мс до 50 мс для отправителя h1:</li>
+</ol>
+<figure id="fig:010">
+<img data-src="images/10.png" style="width:50.0%" alt="рис. 10" />
+<figcaption aria-hidden="true">рис. 10</figcaption>
+</figure>
+<p>и для получателя h2:</p>
+<figure id="fig:011">
+<img data-src="images/11.png" style="width:50.0%" alt="рис. 11" />
+<figcaption aria-hidden="true">рис. 11</figcaption>
+</figure>
+<h2 id="section-7"></h2>
+<ol start="2" type="1">
+<li>Проверьте, что соединение от хоста h1 к хосту h2 имеет задержку 100
+мс, используя команду ping с параметром -c 6 с терминала хоста h1.
+Укажите в отчёте минимальное, среднее, максимальное и стандартное
+отклонение времени приёма-передачи (RTT).</li>
+</ol>
+<figure id="fig:012">
+<img data-src="images/12.png" style="width:60.0%" alt="рис. 12" />
+<figcaption aria-hidden="true">рис. 12</figcaption>
+</figure>
+<p>RTT: 100.267/100.968/101.548/0.436</p>
+<h2
+id="восстановление-исходных-значений-удаление-правил-задержки-в-эмулируемой-глобальной-сети">Восстановление
+исходных значений (удаление правил) задержки в эмулируемой глобальной
+сети</h2>
+<ol type="1">
+<li>Восстановите конфигурацию по умолчанию, удалив все правила,
+применённые к сетевому планировщику соответствующего интерфейса. Для
+отправителя h1:</li>
+</ol>
+<figure id="fig:013">
+<img data-src="images/13.png" style="width:50.0%" alt="рис. 13" />
+<figcaption aria-hidden="true">рис. 13</figcaption>
+</figure>
+<p>Для получателя h2:</p>
+<figure id="fig:014">
+<img data-src="images/14.png" style="width:50.0%" alt="рис. 14" />
+<figcaption aria-hidden="true">рис. 14</figcaption>
+</figure>
+<h2 id="section-8"></h2>
+<ol start="2" type="1">
+<li>Проверьте, что соединение между хостом h1 и хостом h2 не имеет явно
+утановленной задержки, используя команду ping с параметром -c 6 с
+терминала хоста h1. Укажите в отчёте минимальное, среднее, максимальное
+и стандартное отклонение времени приёма-передачи (RTT).</li>
+</ol>
+<figure id="fig:015">
+<img data-src="images/15.png" style="width:60.0%" alt="рис. 15" />
+<figcaption aria-hidden="true">рис. 15</figcaption>
+</figure>
+<p>RTT: 0.059/0.349/1.172/0.394 ms</p>
+<h2
+id="добавление-значения-дрожания-задержки-в-интерфейс-подключения-к-эмулируемой-глобальной-сети">Добавление
+значения дрожания задержки в интерфейс подключения к эмулируемой
+глобальной сети</h2>
+<ol start="2" type="1">
+<li><p>Добавьте на узле h1 задержку в 100 мс со случайным отклонением 10
+мс:</p></li>
+<li><p>Проверьте, что соединение от хоста h1 к хосту h2 имеет задержку
+100 мс со случайным отклонением ±10 мс, используя в терминале хоста h1
+команду ping с параметром -c 6. Укажите в отчёте минимальное, среднее,
+максимальное и стандартное отклонение времени приёма-передачи
+(RTT).</p></li>
+<li><p>Восстановите конфигурацию интерфейса по умолчанию на узле
+h1.</p></li>
+</ol>
+<h2 id="section-9"></h2>
+<figure id="fig:016">
+<img data-src="images/16.png" style="width:50.0%" alt="рис. 16" />
+<figcaption aria-hidden="true">рис. 16</figcaption>
+</figure>
+<h2
+id="добавление-значения-корреляции-для-джиттера-и-задержки-в-интерфейс-подключения-к-эмулируемой-глобальной-сети">Добавление
+значения корреляции для джиттера и задержки в интерфейс подключения к
+эмулируемой глобальной сети</h2>
+<ol type="1">
+<li><p>При необходимости восстановите конфигурацию интерфейсов по
+умолчанию на узлах h1 и h2.</p></li>
+<li><p>Добавьте на интерфейсе хоста h1 задержку в 100 мс с вариацией ±10
+мс и значением корреляции в 25%:</p></li>
+<li><p>Убедитесь, что все пакеты, покидающие устройство h1 на интерфейсе
+h1- eth0, будут иметь время задержки 100 мс со случайным отклонением ±10
+мс, при этом время передачи следующего пакета зависит от предыдущего
+значения на 25%. Используйте для этого в терминале хоста h1 команду ping
+с параметром -c 20. Укажите в отчёте минимальное, среднее, максимальное
+и стандартное отклонение времени приёма-передачи (RTT).</p></li>
+</ol>
+<h2 id="section-10"></h2>
+<figure id="fig:017">
+<img data-src="images/17.png" style="width:50.0%" alt="рис. 17" />
+<figcaption aria-hidden="true">рис. 17</figcaption>
+</figure>
+<h2
+id="распределение-задержки-в-интерфейсе-подключения-к-эмулируемой-глобальной-сети">Распределение
+задержки в интерфейсе подключения к эмулируемой глобальной сети</h2>
+<ol type="1">
+<li><p>При необходимости восстановите конфигурацию интерфейсов по
+умолчанию на узлах h1 и h2.</p></li>
+<li><p>Задайте нормальное распределение задержки на узле h1 в
+эмулируемой сети:</p></li>
+<li><p>Убедитесь, что все пакеты, покидающие хост h1 на интерфейсе
+h1-eth0, будут иметь время задержки, которое распределено в диапазоне
+100 мс ±20 мс.</p></li>
+</ol>
+<h2 id="section-11"></h2>
+<figure id="fig:018">
+<img data-src="images/18.png" style="width:60.0%" alt="рис. 18" />
+<figcaption aria-hidden="true">рис. 18</figcaption>
+</figure>
+<ol start="4" type="1">
+<li>Восстановите конфигурацию интерфейса по умолчанию на узле h1.</li>
+<li>Завершите работу mininet в интерактивном режиме.</li>
+</ol>
+</section>
+<section id="воспроизведение-экспериментов" class="slide level1">
+<h1>3. Воспроизведение экспериментов</h1>
+<h2 id="предварительная-подготовка">Предварительная подготовка</h2>
+<ol type="1">
+<li>Обновите репозитории программного обеспечения на виртуальной
+машине:</li>
+</ol>
+<figure id="fig:019">
+<img data-src="images/19.png" style="width:60.0%" alt="рис. 19" />
+<figcaption aria-hidden="true">рис. 19</figcaption>
+</figure>
+<h2 id="section-12"></h2>
+<ol start="2" type="1">
+<li>Установите пакет geeqie — понадобится для просмотра файлов png:</li>
+</ol>
+<figure id="fig:020">
+<img data-src="images/20.png" style="width:60.0%" alt="рис. 20" />
+<figcaption aria-hidden="true">рис. 20</figcaption>
+</figure>
+<h2 id="section-13"></h2>
+<ol start="3" type="1">
+<li>Для каждого воспроизводимого эксперимента expname создайте свой
+каталог, в котором будут размещаться файлы эксперимента:</li>
+</ol>
+<figure id="fig:021">
+<img data-src="images/21.png" style="width:60.0%" alt="рис. 21" />
+<figcaption aria-hidden="true">рис. 21</figcaption>
+</figure>
+<h2
+id="добавление-задержки-для-интерфейса-подключающегося-к-эмулируемой-глобальной-сети">Добавление
+задержки для интерфейса, подключающегося к эмулируемой глобальной
+сети</h2>
+<ol type="1">
+<li><p>В виртуальной среде mininet в своём рабочем каталоге с проектами
+создайте каталог simple-delay и перейдите в него.</p></li>
+<li><p>Создаёте скрипт для эксперимента lab_netem_i.py:</p></li>
+</ol>
+<figure id="fig:022">
+<img data-src="images/22.png" style="width:60.0%" alt="рис. 22" />
+<figcaption aria-hidden="true">рис. 22</figcaption>
+</figure>
+<h2 id="section-14"></h2>
+<ol start="4" type="1">
+<li>Создаёте скрипт для визуализации ping_plot результатов
+эксперимента.</li>
+</ol>
+<figure id="fig:023">
+<img data-src="images/23.png" style="width:60.0%" alt="рис. 23" />
+<figcaption aria-hidden="true">рис. 23</figcaption>
+</figure>
+<h2 id="section-15"></h2>
+<ol start="5" type="1">
+<li>Задайте права доступа к файлу скрипта:</li>
+</ol>
+<figure id="fig:024">
+<img data-src="images/24.png" style="width:60.0%" alt="рис. 24" />
+<figcaption aria-hidden="true">рис. 24</figcaption>
+</figure>
+<h2 id="section-16"></h2>
+<ol start="6" type="1">
+<li>Создайте Makefile для управления процессом проведения
+эксперимента:</li>
+</ol>
+<figure id="fig:025">
+<img data-src="images/25.png" style="width:60.0%" alt="рис. 25" />
+<figcaption aria-hidden="true">рис. 25</figcaption>
+</figure>
+<h2 id="section-17"></h2>
+<ol start="7" type="1">
+<li>Выполните эксперимент:</li>
+</ol>
+<figure id="fig:026">
+<img data-src="images/26.png" style="width:60.0%" alt="рис. 26" />
+<figcaption aria-hidden="true">рис. 26</figcaption>
+</figure>
+<h2 id="section-18"></h2>
+<ol start="9" type="1">
+<li>Из файла ping.dat удалите первую строку и заново постройте
+график:</li>
+</ol>
+<figure id="fig:027">
+<img data-src="images/27.png" style="width:60.0%" alt="рис. 27" />
+<figcaption aria-hidden="true">рис. 27</figcaption>
+</figure>
+<h2 id="section-19"></h2>
+<ol start="10" type="1">
+<li>Продемонстрируйте построенный в результате график</li>
+</ol>
+<figure id="fig:028">
+<img data-src="images/28.png" style="width:60.0%" alt="рис. 28" />
+<figcaption aria-hidden="true">рис. 28</figcaption>
+</figure>
+<h2 id="section-20"></h2>
+<ol start="11" type="1">
+<li>Разработайте скрипт для вычисления на основе данных файла ping.dat
+минимального, среднего, максимального и стандартного отклонения времени
+приёма-передачи.</li>
+</ol>
+<figure id="fig:029">
+<img data-src="images/29.png" style="width:60.0%" alt="рис. 29" />
+<figcaption aria-hidden="true">рис. 29</figcaption>
+</figure>
+<h2 id="section-21"></h2>
+<ol start="12" type="1">
+<li>Очистите каталог от результатов проведения экспериментов:</li>
+</ol>
+<figure id="fig:030">
+<img data-src="images/30.png" style="width:60.0%" alt="рис. 30" />
+<figcaption aria-hidden="true">рис. 30</figcaption>
+</figure>
+<h2 id="вывод">Вывод</h2>
+<p>Я познакомилась с NETEM — инструментом для тестирования
+производительности приложений в виртуальной сети, а также получила
+навыки проведения интерактивного и воспроизводимого экспериментов по
+измерению задержки и её дрожания (jitter) в моделируемой сети в среде
+Mininet.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
